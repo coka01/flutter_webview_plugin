@@ -464,6 +464,15 @@ class WebviewManager {
         });
     }
 
+    void getAllCookies(MethodCall call, final MethodChannel.Result result) {
+        String url = call.argument("url");
+
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        String cookies = cookieManager.getCookie(url);
+        result.success(cookies);
+    }
+
     /**
      * Reloads the Webview.
      */

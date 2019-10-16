@@ -55,6 +55,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "eval":
                 eval(call, result);
                 break;
+            case "getAllCookies":
+                getAllCookies(call, result);
+                break;
             case "resize":
                 resize(call, result);
                 break;
@@ -226,6 +229,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private void eval(MethodCall call, final MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.eval(call, result);
+        }
+    }
+
+    private void getAllCookies(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.getAllCookies(call, result);
         }
     }
 

@@ -17,7 +17,7 @@ enum WebViewState { shouldStart, startLoad, finishLoad, abortLoad }
 /// Singleton class that communicate with a Webview Instance
 class FlutterWebviewPlugin {
   factory FlutterWebviewPlugin() {
-    if(_instance == null) {
+    if (_instance == null) {
       const MethodChannel methodChannel = const MethodChannel(_kChannel);
       _instance = FlutterWebviewPlugin.private(methodChannel);
     }
@@ -76,12 +76,10 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(
-            WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
       case 'javascriptChannelMessage':
-        _handleJavascriptChannelMessage(
-            call.arguments['channel'], call.arguments['message']);
+        _handleJavascriptChannelMessage(call.arguments['channel'], call.arguments['message']);
         break;
     }
   }
@@ -206,8 +204,7 @@ class FlutterWebviewPlugin {
       }
     }
 
-    args['javascriptChannelNames'] =
-        _extractJavascriptChannelNames(javascriptChannels).toList();
+    args['javascriptChannelNames'] = _extractJavascriptChannelNames(javascriptChannels).toList();
 
     if (rect != null) {
       args['rect'] = {
@@ -223,6 +220,11 @@ class FlutterWebviewPlugin {
   /// Execute Javascript inside webview
   Future<String> evalJavascript(String code) async {
     final res = await _channel.invokeMethod('eval', {'code': code});
+    return res;
+  }
+
+  Future<String> getAllCookiesIncludingHttpOnlyCookie(String url) async {
+    final res = await _channel.invokeMethod('getAllCookies', {'url': url});
     return res;
   }
 
@@ -258,12 +260,10 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async =>
-      await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async =>
-      await _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
@@ -280,6 +280,20 @@ class FlutterWebviewPlugin {
 
   Future<Map<String, String>> getCookies() async {
     final cookiesString = await evalJavascript('document.cookie');
+    final cookies = <String, String>{};
+
+    if (cookiesString?.isNotEmpty == true) {
+      cookiesString.split(';').forEach((String cookie) {
+        final split = cookie.split('=');
+        cookies[split[0]] = split[1];
+      });
+    }
+
+    return cookies;
+  }
+
+  Future<Map<String, String>> getAllCookies(String url) async {
+    final cookiesString = await getAllCookiesIncludingHttpOnlyCookie(url);
     final cookies = <String, String>{};
 
     if (cookiesString?.isNotEmpty == true) {
@@ -312,14 +326,11 @@ class FlutterWebviewPlugin {
     return channelNames;
   }
 
-  void _handleJavascriptChannelMessage(
-      final String channelName, final String message) {
-    _javascriptChannels[channelName]
-        .onMessageReceived(JavascriptMessage(message));
+  void _handleJavascriptChannelMessage(final String channelName, final String message) {
+    _javascriptChannels[channelName].onMessageReceived(JavascriptMessage(message));
   }
 
-  void _assertJavascriptChannelNamesAreUnique(
-      final Set<JavascriptChannel> channels) {
+  void _assertJavascriptChannelNamesAreUnique(final Set<JavascriptChannel> channels) {
     if (channels == null || channels.isEmpty) {
       return;
     }
