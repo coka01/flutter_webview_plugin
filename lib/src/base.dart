@@ -285,6 +285,8 @@ class FlutterWebviewPlugin {
     if (cookiesString?.isNotEmpty == true) {
       cookiesString.split(';').forEach((String cookie) {
         final split = cookie.split('=');
+        split[0].trim();
+        split[1].trim();
         cookies[split[0]] = split[1];
       });
     }
@@ -299,6 +301,8 @@ class FlutterWebviewPlugin {
     if (cookiesString?.isNotEmpty == true) {
       cookiesString.split(';').forEach((String cookie) {
         final split = cookie.split('=');
+        split[0].trim();
+        split[1].trim();
         cookies[split[0]] = split[1];
       });
     }

@@ -232,7 +232,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     [cookiesString appendString:@"="];
                     [cookiesString appendString:cookie.value];
                     if (cookies.lastObject.name != cookie.name) {
-                        [cookiesString appendString:@"; "];
+                        [cookiesString appendString:@";"];
                     }
                 }
                 completionHandler([NSString stringWithFormat:@"%@", cookiesString]);
